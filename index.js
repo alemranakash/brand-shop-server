@@ -1,5 +1,7 @@
 const express = require('express');
 const app = express();
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const { ObjectId } = require('mongodb');
 const cors = require('cors');
 const port = process.env.PORT || 4000;
 
@@ -13,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+
 const uri = "mongodb+srv://alemranexpert:z90P36pVX7KGAAIt@cluster0.ftdzayi.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -31,6 +33,7 @@ async function run() {
     await client.connect();
 
     const productsCollection = client.db('productsDB').collection('products');
+    const myCartCollection = client.db('productsDB').collection('myCart');
 
     app.post('/products', async (req, res) => {
       const newProducts = req.body;
@@ -44,7 +47,28 @@ async function run() {
     res.send(result)
 })
 
+//* My cart related function
 
+app.post('/myCart', async (req, res) => {
+  const myCartProducts = req.body;
+  console.log('Cart', myCartProducts)
+  const result = await myCartCollection.insertOne(myCartProducts)
+  res.send(result)
+})
+
+app.get('/myCart', async (req, res) =>{
+  const result = await myCartCollection.find().toArray();
+  res.send(result)
+})
+
+app.delete('/myCart/:id', async (req, res) => {
+  const id = req.params.id;
+  console.log('Delete from database', id)
+  const query = { _id: new ObjectId(id) }
+  const result = await myCartCollection.deleteOne(query)
+  res.send(result)
+
+})
 
 
     // Send a ping to confirm a successful connection
