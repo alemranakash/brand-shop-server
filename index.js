@@ -3,6 +3,7 @@ const app = express();
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const { ObjectId } = require('mongodb');
 const cors = require('cors');
+require('dotenv').config();
 const port = process.env.PORT || 4000;
 
 
@@ -16,7 +17,7 @@ app.use(express.json());
 
 
 
-const uri = "mongodb+srv://alemranexpert:z90P36pVX7KGAAIt@cluster0.ftdzayi.mongodb.net/?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.ftdzayi.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -30,7 +31,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const productsCollection = client.db('productsDB').collection('products');
     const myCartCollection = client.db('productsDB').collection('myCart');
